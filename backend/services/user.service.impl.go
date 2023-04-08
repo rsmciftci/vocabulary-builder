@@ -36,7 +36,7 @@ func (UserService *UserServiceImpl) DeleteByEmail(email *string) error {
 	return nil
 }
 func (UserService *UserServiceImpl) UpdateUser(user *models.User) error {
-	// TODO emaili idye cevir
+	// TODO: emaili idye cevir
 	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
 	update := bson.D{
 		primitive.E{Key: "name", Value: user.Name},
