@@ -68,6 +68,7 @@ func (userController *UserController) FindUserByEmailAndPassword(ctx *gin.Contex
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"Message": "Success"})
+	// TODO: sifrealani olmadan user"i don
 }
 
 func (userController *UserController) RegisterUserRoutes(routerGroup *gin.RouterGroup) {
