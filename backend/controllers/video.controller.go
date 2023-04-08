@@ -42,12 +42,12 @@ func (c *VideoController) DeleteVideo(ctx *gin.Context) {
 }
 
 func (c *VideoController) UpdateVideo(ctx *gin.Context) {
-	var video models.Video
+	var video dto.VideoDto
 	if err := ctx.ShouldBindJSON(&video); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"Message": err.Error()})
 		return
 	}
-	err := c.videoService.UpdateVideo(&video)
+	err := c.videoService.UpdateVideo(video)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
@@ -83,5 +83,5 @@ func (videoController *VideoController) RegisterVideoRoutes(routerGroup *gin.Rou
 	userRoute.DELETE("/:id", videoController.DeleteVideo)
 	userRoute.PATCH("", videoController.UpdateVideo)
 	userRoute.GET("", videoController.GetAllVideos)
-	userRoute.GET("/:name", videoController.FindByName)
+	userRoute.GET("/:name", videoController.FindAVideo)
 }
