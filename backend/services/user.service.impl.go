@@ -36,19 +36,20 @@ func (UserService *UserServiceImpl) DeleteByEmail(email *string) error {
 	return nil
 }
 func (UserService *UserServiceImpl) UpdateUser(user *models.User) error {
-	// TODO: emaili idye cevir
-	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
+
+	filter := bson.D{primitive.E{Key: "_id", Value: user.Email}}
 	update := bson.D{
 		primitive.E{Key: "name", Value: user.Name},
 		primitive.E{Key: "surname", Value: user.Surname},
-		primitive.E{Key: "date_of_birth", Value: user.DateOfBirth},
+		primitive.E{Key: "DateOfBirth", Value: user.DateOfBirth},
 		primitive.E{Key: "gender", Value: user.Gender},
-		primitive.E{Key: "email", Value: user.Email},
+		primitive.E{Key: "_id", Value: user.Email},
 		primitive.E{Key: "password", Value: user.Password},
 	}
 
-	result, _ := UserService.userCollection.UpdateOne(UserService.ctx, filter, update)
-	if result.UpsertedCount == 0 {
+	result, _ := UserService.userCollection.ReplaceOne(UserService.ctx, filter, update)
+
+	if result.ModifiedCount == 0 {
 		return errors.New("user not updated")
 	}
 	return nil
