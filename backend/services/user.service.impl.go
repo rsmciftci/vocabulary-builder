@@ -28,9 +28,9 @@ func (UserService *UserServiceImpl) SaveUser(user *models.User) error {
 	return err
 }
 func (UserService *UserServiceImpl) DeleteByEmail(email *string) error {
-	filter := bson.D{primitive.E{Key: "email", Value: email}}
+	filter := bson.D{primitive.E{Key: "_id", Value: email}}
 	result, _ := UserService.userCollection.DeleteOne(UserService.ctx, filter)
-	if result.DeletedCount == 1 {
+	if result.DeletedCount != 1 {
 		return errors.New("email didn't match with any user")
 	}
 	return nil
