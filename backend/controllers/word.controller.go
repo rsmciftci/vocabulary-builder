@@ -52,7 +52,7 @@ func (c *WordController) UpdateWord(ctx *gin.Context) {
 
 func (c *WordController) FindWord(ctx *gin.Context) {
 	word := ctx.Param("word")
-	result, err := c.WordService.FindWord(word)
+	result, err := c.WordService.FindWord(&word)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
