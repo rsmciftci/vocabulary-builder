@@ -57,7 +57,7 @@ func (UserService *UserServiceImpl) UpdateUser(user *models.User) error {
 
 func (UserService *UserServiceImpl) FindUserByEmailAndPassword(emailAndPsswd *dto.EmailAndPassword) error {
 
-	filter := bson.D{primitive.E{Key: "email", Value: emailAndPsswd.Email},
+	filter := bson.D{primitive.E{Key: "_id", Value: emailAndPsswd.Email},
 		primitive.E{Key: "password", Value: emailAndPsswd.Password}}
 	err := UserService.userCollection.FindOne(UserService.ctx, filter).Err()
 	return err
