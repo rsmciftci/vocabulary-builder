@@ -13,6 +13,12 @@ type VideoController struct {
 	videoService services.VideoService
 }
 
+func NewVideoController(VideoService services.VideoService) VideoController {
+	return VideoController{
+		videoService: VideoService,
+	}
+}
+
 func (c *VideoController) SaveVideo(ctx *gin.Context) {
 	var video models.Video
 

@@ -13,6 +13,12 @@ type UserController struct {
 	UserService services.UserService
 }
 
+func NewUserController(UserService services.UserService) UserController {
+	return UserController{
+		UserService: UserService,
+	}
+}
+
 func (userController *UserController) SaveUser(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {

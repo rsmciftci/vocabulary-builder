@@ -13,6 +13,12 @@ type WordController struct {
 	WordService services.WordService
 }
 
+func NewWordController(WordService services.WordService) WordController {
+	return WordController{
+		WordService: WordService,
+	}
+}
+
 func (c *WordController) SaveWord(ctx *gin.Context) {
 	var word models.Word
 	if err := ctx.ShouldBindJSON(&word); err != nil {
