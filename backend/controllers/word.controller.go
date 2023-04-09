@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"vocabulary-builder/dto"
 	"vocabulary-builder/models"
 	"vocabulary-builder/services"
 
@@ -36,7 +37,7 @@ func (c *WordController) DeleteWordById(ctx *gin.Context) {
 }
 
 func (c *WordController) UpdateWord(ctx *gin.Context) {
-	var word models.Word
+	var word dto.Word
 	if err := ctx.ShouldBindJSON(&word); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"Message": err.Error()})
 		return
