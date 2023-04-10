@@ -2,11 +2,11 @@ package services
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"vocabulary-builder/dto"
 	"vocabulary-builder/models"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,6 +25,7 @@ func NewWordService(wordCollection *mongo.Collection, ctx context.Context) WordS
 }
 
 func (w *WordServiceImpl) SaveWord(word *models.Word) error {
+	word.UUID = uuid.New().String()
 	_, err := w.wordColection.InsertOne(w.ctx, word)
 	if err != nil {
 		return errors.New("word not saved")
@@ -33,28 +34,29 @@ func (w *WordServiceImpl) SaveWord(word *models.Word) error {
 
 }
 
-func (w *WordServiceImpl) DeleteWordById(id string) error {
-	hexId := hex.EncodeToString([]byte(id))
-	objectId, _ := primitive.ObjectIDFromHex(hexId)
-	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
-	_, err := w.wordColection.DeleteOne(w.ctx, filter)
-	return err
+func (w *WordServiceImpl) DeleteWordById(uuid string) error {
+	filter := bson.D{primitive.E{Key: "uuid", Value: uuid}}
+	result, _ := w.wordColection.DeleteOne(w.ctx, filter)
+	if result.DeletedCount == 0 {
+		return errors.New("word not deleted")
+	}
+	return nil
 }
 
 func (w *WordServiceImpl) UpdateWord(word *dto.Word) error {
-	hexId := hex.EncodeToString([]byte(word.ObjectId))
-	objectId, _ := primitive.ObjectIDFromHex(hexId)
+
 	updated := bson.D{
+		primitive.E{Key: "uuid", Value: word.UUID},
 		primitive.E{Key: "word", Value: word.Word},
 		primitive.E{Key: "meaning", Value: word.Meaning},
 		primitive.E{Key: "word_type", Value: word.WordType},
 		primitive.E{Key: "example_sentences", Value: word.ExampleSentences},
 	}
 
-	filter := bson.D{primitive.E{Key: "object_id", Value: objectId}}
-	result, _ := w.wordColection.UpdateOne(w.ctx, filter, updated)
-	if result.UpsertedCount == 0 {
-		return errors.New("word not updated")
+	filter := bson.D{primitive.E{Key: "uuid", Value: word.UUID}}
+	result, _ := w.wordColection.ReplaceOne(w.ctx, filter, updated)
+	if result.MatchedCount == 0 {
+		return errors.New("uuid didn't match with any words")
 	}
 	return nil
 }
