@@ -82,3 +82,6 @@ func main() {
 	log.Fatal(server.Run(":9090"))
 
 }
+
+// TODO: jwt
+// TODO: input sanitise inputs against sql injection
