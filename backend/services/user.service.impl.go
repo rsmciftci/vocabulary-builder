@@ -35,18 +35,19 @@ func (UserService *UserServiceImpl) SaveUser(user *models.User) error {
 	_, err := UserService.userCollection.InsertOne(UserService.ctx, user)
 	return err
 }
-func (UserService *UserServiceImpl) DeleteByEmail(email *string) error {
-	filter := bson.D{primitive.E{Key: "email", Value: email}}
+func (UserService *UserServiceImpl) DeleteByUUID(uuid *string) error {
+	filter := bson.D{primitive.E{Key: "uuid", Value: uuid}}
 	result, _ := UserService.userCollection.DeleteOne(UserService.ctx, filter)
 	if result.DeletedCount != 1 {
-		return errors.New("email didn't match with any user")
+		return errors.New("uuid didn't match with any user")
 	}
 	return nil
 }
 func (UserService *UserServiceImpl) UpdateUser(user *models.User) error {
 
-	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
+	filter := bson.D{primitive.E{Key: "uuid", Value: user.UUID}}
 	update := bson.D{
+		primitive.E{Key: "uuid", Value: user.UUID},
 		primitive.E{Key: "name", Value: user.Name},
 		primitive.E{Key: "surname", Value: user.Surname},
 		primitive.E{Key: "DateOfBirth", Value: user.DateOfBirth},

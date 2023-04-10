@@ -35,9 +35,9 @@ func (userController *UserController) SaveUser(ctx *gin.Context) {
 
 }
 
-func (userController *UserController) DeleteByEmail(ctx *gin.Context) {
-	var email string = ctx.Param("email")
-	err := userController.UserService.DeleteByEmail(&email)
+func (userController *UserController) DeleteByUUID(ctx *gin.Context) {
+	var email string = ctx.Param("uuid")
+	err := userController.UserService.DeleteByUUID(&email)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
@@ -80,7 +80,7 @@ func (userController *UserController) FindUserByEmailAndPassword(ctx *gin.Contex
 func (userController *UserController) RegisterUserRoutes(routerGroup *gin.RouterGroup) {
 	userRoute := routerGroup.Group("/user")
 	userRoute.POST("", userController.SaveUser)
-	userRoute.DELETE("/:email", userController.DeleteByEmail)
+	userRoute.DELETE("/:uuid", userController.DeleteByUUID)
 	userRoute.PUT("", userController.UpdateUser)
 	userRoute.GET("", userController.FindUserByEmailAndPassword)
 }

@@ -7,7 +7,7 @@ import (
 
 type UserService interface {
 	SaveUser(*models.User) error
-	DeleteByEmail(*string) error
+	DeleteByUUID(*string) error
 	UpdateUser(*models.User) error
 	FindUserByEmailAndPassword(*dto.EmailAndPassword) error
 }
