@@ -1,7 +1,8 @@
 package models
 
 type UserWord struct {
-	UserId  string `json:"user_id" validate:"required" `
-	WordId  string `json:"word_id" validate:"required"`
-	Learned *bool  `json:"learned" validate:"required"`
+	UUID     string
+	UserUUID string `json:"user_uuid" validate:"required" `
+	WordUUID string `json:"word_uuid" validate:"required"`
+	Learned  *bool  `json:"learned" validate:"required"`
 }

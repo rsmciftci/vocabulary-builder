@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"vocabulary-builder/dto"
 	"vocabulary-builder/models"
 	"vocabulary-builder/services"
 
@@ -35,12 +34,12 @@ func (uwc *UserWordController) SaveUserWord(ctx *gin.Context) {
 }
 
 func (uwc *UserWordController) UpdateUserWord(ctx *gin.Context) {
-	var userWordDto *dto.UserWordDto
-	if err := ctx.ShouldBindJSON(userWordDto); err != nil {
+	var userword *models.UserWord
+	if err := ctx.ShouldBindJSON(&userword); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"Message": err.Error()})
 		return
 	}
-	err := uwc.UserWordService.UpdateUserWord(userWordDto)
+	err := uwc.UserWordService.UpdateUserWord(userword)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
@@ -49,8 +48,8 @@ func (uwc *UserWordController) UpdateUserWord(ctx *gin.Context) {
 }
 
 func (uwc *UserWordController) GetAllByUser(ctx *gin.Context) {
-	userId := ctx.Param("userId")
-	userWordList, err := uwc.UserWordService.GetAllByUser(&userId)
+	uuid := ctx.Param("uuid")
+	userWordList, err := uwc.UserWordService.GetAllByUser(&uuid)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
@@ -59,8 +58,8 @@ func (uwc *UserWordController) GetAllByUser(ctx *gin.Context) {
 }
 
 func (uwc *UserWordController) DeleteUserWord(ctx *gin.Context) {
-	wordId := ctx.Param("wordId")
-	err := uwc.UserWordService.DeleteUserWord(&wordId)
+	uuid := ctx.Param("uuid")
+	err := uwc.UserWordService.DeleteUserWord(&uuid)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"Message": err.Error()})
 		return
@@ -73,6 +72,6 @@ func (uwc *UserWordController) RegisterUserRoutes(routerGroup *gin.RouterGroup) 
 	userRoute := routerGroup.Group("/userword")
 	userRoute.POST("", uwc.SaveUserWord)
 	userRoute.PUT("", uwc.UpdateUserWord)
-	userRoute.GET("/:userId", uwc.GetAllByUser)
-	userRoute.DELETE("/:wordId", uwc.DeleteUserWord)
+	userRoute.GET("/:uuid", uwc.GetAllByUser)
+	userRoute.DELETE("/:uuid", uwc.DeleteUserWord)
 }

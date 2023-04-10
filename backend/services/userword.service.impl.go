@@ -2,11 +2,10 @@ package services
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
-	"vocabulary-builder/dto"
 	"vocabulary-builder/models"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,30 +25,30 @@ func NewUserWordService(UserWordCollection *mongo.Collection, ctx context.Contex
 }
 
 func (uws *UserWordServiceImpl) SaveUserWord(userword *models.UserWord) error {
+	userword.UUID = uuid.New().String()
 	_, err := uws.UserWordCollection.InsertOne(uws.ctx, userword)
 
 	return err
 }
-func (uws *UserWordServiceImpl) UpdateUserWord(userworddto *dto.UserWordDto) error {
-	userWordId := userworddto.ObjectId
-	hexId := hex.EncodeToString([]byte(userWordId))
-	objectId, _ := primitive.ObjectIDFromHex(hexId)
-	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
+func (uws *UserWordServiceImpl) UpdateUserWord(userword *models.UserWord) error {
+
+	filter := bson.D{primitive.E{Key: "uuid", Value: userword.UUID}}
 
 	update := bson.D{
-		primitive.E{Key: "learned", Value: userworddto.Learned},
-		primitive.E{Key: "userId", Value: userworddto.UserId},
-		primitive.E{Key: "wordId", Value: userworddto.WordId},
+		primitive.E{Key: "uuid", Value: userword.UUID},
+		primitive.E{Key: "learned", Value: userword.Learned},
+		primitive.E{Key: "userUUID", Value: userword.UserUUID},
+		primitive.E{Key: "wordUUID", Value: userword.WordUUID},
 	}
-	result, _ := uws.UserWordCollection.UpdateOne(uws.ctx, filter, update)
-	if result.UpsertedCount == 0 {
+	result, _ := uws.UserWordCollection.ReplaceOne(uws.ctx, filter, update)
+	if result.ModifiedCount == 0 {
 		return errors.New("userword not updated")
 	}
 	return nil
 }
-func (uws *UserWordServiceImpl) GetAllByUser(userId *string) ([]*models.UserWord, error) {
+func (uws *UserWordServiceImpl) GetAllByUser(uuid *string) ([]*models.UserWord, error) {
 
-	filter := bson.D{primitive.E{Key: "user_id", Value: userId}}
+	filter := bson.D{primitive.E{Key: "uuid", Value: uuid}}
 	cursor, err := uws.UserWordCollection.Find(uws.ctx, filter)
 
 	if err != nil {
@@ -78,8 +77,8 @@ func (uws *UserWordServiceImpl) GetAllByUser(userId *string) ([]*models.UserWord
 	return userWordList, nil
 }
 
-func (uws *UserWordServiceImpl) DeleteUserWord(wordId *string) error {
-	filter := bson.D{primitive.E{Key: "word_id", Value: wordId}}
+func (uws *UserWordServiceImpl) DeleteUserWord(uuid *string) error {
+	filter := bson.D{primitive.E{Key: "uuid", Value: uuid}}
 	result, _ := uws.UserWordCollection.DeleteOne(uws.ctx, filter)
 	if result.DeletedCount == 0 {
 		return errors.New("userword not deleted")
